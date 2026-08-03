@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
 
-const projectSchema = new  mongoose.Schema({
-    user: {
+const projectSchema = new mongoose.Schema({
+  user: {
     type: String,
-    required: true},
+    required: true,
+  },
 
-    url: { 
+  url: {
     type: String,
-    required: true},
+    required: true,
+  },
 
-
-    shortUrl: {type:String},
-
+  shortUrl: { type: String },
 });
 
-export  const Model = mongoose.model("url", projectSchema)
+export const Url = mongoose.model("url", projectSchema);
