@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { nanoid } from 'nanoid'
 
 const projectSchema = new mongoose.Schema({
   // user: {
