@@ -1,8 +1,12 @@
 import express from "express";
 import { Url } from "../models/urlModel";
+import { nanoid } from "nanoid";
 
 export const createUrl = (req, res) => {
   const { url } = req.body;
+  const  snip = nanoid(url);
+  
+  
 
   res.send("here i will create a shoert url");
 };
