@@ -4,7 +4,8 @@ import { nanoid } from "nanoid";
 
 export const createUrl = (req, res) => {
   const { url } = req.body;
-  const  snip = nanoid(url);
+  const  snip = nanoid();
+
   
   
 
