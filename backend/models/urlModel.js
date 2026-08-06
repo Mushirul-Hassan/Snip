@@ -15,4 +15,4 @@ const projectSchema = new mongoose.Schema({
   nano_id: { type: String, default: nanoid },
 });
 
-export const Url = mongoose.model("url", projectSchema);
+export const Url = mongoose.model("Url", projectSchema);
