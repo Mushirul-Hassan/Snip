@@ -1,14 +1,17 @@
 import express from "express";
 import { Url } from "../models/urlModel";
-import { nanoid } from "nanoid";
+// import { nanoid } from "nanoid";
 
-export const createUrl = (req, res) => {
+export const createUrl = async (req, res) => {
   const { url } = req.body;
   const  snip = nanoid();
+  
   const newUrl = new Url({
     url,
     nano_id: snip
   });
+
+  await newUrl.save();
 
 
   
