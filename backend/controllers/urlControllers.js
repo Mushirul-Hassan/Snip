@@ -11,15 +11,13 @@ export const createUrl = async (req, res) => {
     nano_id: snip,
   });
 
-  await newUrl.save();
+  const savedUrl = await newUrl.save();
 
-  res
-    .status(201)
-    .json({
-      success: true,
-      message: "URL shortened successfully!",
-      data: newUrl
-    });
+  res.status(201).json({
+    success: true,
+    message: "URL shortened successfully!",
+    data: savedUrl,
+  });
 };
 
 export const getUrl = async (req, res) => {
