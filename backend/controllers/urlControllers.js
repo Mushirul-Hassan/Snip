@@ -4,20 +4,16 @@ import { Url } from "../models/urlModel";
 
 export const createUrl = async (req, res) => {
   const { url } = req.body;
-  const  snip = nanoid();
-  
+  const snip = nanoid();
+
   const newUrl = new Url({
     url,
-    nano_id: snip
+    nano_id: snip,
   });
 
   await newUrl.save();
 
-
-  
-  
-
-  res.send("here i will create a shoert url");
+  res.status(200).send("URL created sucessfully!");
 };
 
 export const getUrl = (req, res) => {
