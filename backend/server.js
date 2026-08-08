@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 
  
 app.get("/", (req, res) => {
-  response.send({ message: "Hello from an Express API!" });
+  res.send({ message: "Hello from an Express API!" });
 });
  
 app.listen(PORT, () => {
