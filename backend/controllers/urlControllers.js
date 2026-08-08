@@ -13,9 +13,17 @@ export const createUrl = async (req, res) => {
 
   await newUrl.save();
 
-  res.status(200).send("URL created sucessfully!");
+  res
+    .status(201)
+    .json({
+      success: true,
+      message: "URL shortened successfully!",
+      newUrl: newUrl
+    });
 };
 
-export const getUrl = (req, res) => {
+export const getUrl = async (req, res) => {
+  // const getUrl = await findOne(Url(_id));
+
   res.send("here i will get the  url");
 };
