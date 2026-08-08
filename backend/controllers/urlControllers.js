@@ -18,7 +18,7 @@ export const createUrl = async (req, res) => {
     .json({
       success: true,
       message: "URL shortened successfully!",
-      newUrl: newUrl
+      data: newUrl
     });
 };
 
