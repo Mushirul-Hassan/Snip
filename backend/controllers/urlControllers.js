@@ -1,6 +1,6 @@
 import express from "express";
-import { Url } from "../models/urlModel";
-// import { nanoid } from "nanoid";
+import { Url } from "../models/urlModel.js";
+import { nanoid } from "nanoid";
 
 export const createUrl = async (req, res) => {
   const { url } = req.body;
@@ -21,7 +21,12 @@ export const createUrl = async (req, res) => {
 };
 
 export const getUrl = async (req, res) => {
-  // const getUrl = await findOne(Url(_id));
+  const id = req.params.id;
+  const getUrl = await Url.findById(id);
 
-  res.send("here i will get the  url");
+  res.status(200).json({
+    success: true,
+    message: "User fetched successfully",
+    data: getUrl,
+  });
 };
