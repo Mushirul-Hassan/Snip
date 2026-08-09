@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUrl, getUrl } from '../controllers/urlControllers';
+import { createUrl, getUrl } from '../controllers/urlControllers.js';
 const router = express.Router();
 
 // router.post("/user");
