@@ -1,6 +1,6 @@
 import express from "express";
-import { connectDB } from "./config/db";
-import { dotenv } from "dotenv";
+import { connectDB } from "./config/db.js";
+import  dotenv  from "dotenv";
 // import urlContr
 
 dotenv.config();
