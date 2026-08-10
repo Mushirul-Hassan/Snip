@@ -22,7 +22,8 @@ export const createUrl = async (req, res) => {
 
 export const getUrl = async (req, res) => {
   const id = req.params.nano_id;
-  const getUrl = await Url.findOne("nano_id");
+  const getUrl = await Url.findOne({ nano_id: id });
+  console.log(typeof getUrl);
   console.log(getUrl);
   res.status(200).json({
     success: true,
