@@ -21,13 +21,12 @@ export const createUrl = async (req, res) => {
 };
 
 export const getUrl = async (req, res) => {
-  const id = req.params.id;
-  const getUrl = await Url.findById(id).select('nano_id');
- 
+  const id = req.params.nano_id;
+  const getUrl = await Url.findOne("nano_id");
+  console.log(getUrl);
   res.status(200).json({
     success: true,
     message: "User fetched successfully",
     data: getUrl,
   });
-  
 };
