@@ -22,15 +22,18 @@ export const createUrl = async (req, res) => {
 
 export const getUrl = async (req, res) => {
   const { nano_id } = req.params;
-  console.log(nano_id);
+  // console.log(nano_id);
   const getUrl = await Url.findOne({ nano_id: nano_id }, { _id: 0, url: 1 });
+  res.redirect("getUrl.url", 301);
+  // console.log(typeof getUrl);
+  // console.log(getUrl);
 
-  console.log(typeof getUrl);
-  console.log(getUrl);
 
-  res.status(200).json({
-    success: true,
-    message: "URL fetched successfully",
-    data: getUrl,
-  });
+  // res.status(200).json({
+  //   success: true,
+  //   message: "URL fetched successfully",
+  //   data: getUrl,
+  // });
+  // console.log("something");
+ 
 };
