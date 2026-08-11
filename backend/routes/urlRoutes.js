@@ -5,6 +5,6 @@ const router = express.Router();
 // router.post("/user");
 // router.get("/user/:id");
 router.post("/create", createUrl);
-router.get("/:id", getUrl);
+router.get("/:nano_id", getUrl);
 // router.get("/shortUrl");
 export default router;
