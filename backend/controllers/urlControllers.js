@@ -24,7 +24,7 @@ export const getUrl = async (req, res) => {
   const { nano_id } = req.params;
   // console.log(nano_id);
   const getUrl = await Url.findOne({ nano_id: nano_id }, { _id: 0, url: 1 });
-  res.redirect("getUrl.url", 301);
+  res.redirect(301, getUrl.url);
   // console.log(typeof getUrl);
   // console.log(getUrl);
 
