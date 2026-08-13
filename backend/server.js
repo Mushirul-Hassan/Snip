@@ -1,12 +1,21 @@
 import express from "express";
+import session from "express";
 import { connectDB } from "./config/db.js";
-import  dotenv  from "dotenv";
+import dotenv from "dotenv";
 import urlRouter from "./routes/urlRoutes.js";
 
 dotenv.config();
 connectDB();
 
 const app = express();
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 60000 },
+  }),
+);
 const PORT = 3000 || process.env.PORT;
 
 app.use(express.json());
