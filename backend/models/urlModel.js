@@ -16,6 +16,7 @@ const projectSchema = new mongoose.Schema({
 
   click: {
     type: Number,
+    default: 0,
   },
 });
 
