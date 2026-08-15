@@ -22,7 +22,7 @@ export const createUrl = async (req, res) => {
 
 export const getUrl = async (req, res) => {
   const { nano_id } = req.params;
-  const getUrl = await Url.findOne({ nano_id: nano_id }, { _id: 0, url: 1 });
+  const getUrl = await Url.findOne({ nano_id }, { _id: 0, url: 1 });
 
   res.redirect(301, getUrl.url);
   const clickCount = await Url.findOneAndUpdate(
@@ -34,12 +34,12 @@ export const getUrl = async (req, res) => {
 };
 
 export const updateUrl = async (req, res) => {
-  const {id} = req.params;
+  const { nano_id } = req.params;
   const editUrl = req.body.url;
-  const updatedUrl = await Url.findByIdAndUpdate(
-     id ,
-    { $set:  {url: editUrl  }},
-    {returnDocument: 'after'},
+  const updatedUrl = await Url.findOneAndUpdate(
+    { nano_id},
+    { $set: { url: editUrl } },
+    { returnDocument: "after" },
   );
 
   res.status(201).json({
