@@ -34,6 +34,16 @@ export const getUrl = async (req, res) => {
 };
 
 export const updateUrl = async (req, res) => {
-  const { nano_id } = req.params;
-  const getUrl = await Url 
+  // const { _id } = req.params.id;
+  const updateUrl = await Url.findByIdAndUpdate(
+    { _id },
+    { $set: { url: req.body.url } },
+    {new: true},
+  );
+
+  res.status(201).json({
+    success: true,
+    message: "URL changed successfully!",
+    data: updateUrl,
+  });
 };
