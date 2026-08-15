@@ -30,20 +30,22 @@ export const getUrl = async (req, res) => {
     { $inc: { click: 1 } },
   );
 
-  console.log(clickCount.click);
+  // console.log(clickCount.click);
 };
 
 export const updateUrl = async (req, res) => {
-  // const { _id } = req.params.id;
-  const updateUrl = await Url.findByIdAndUpdate(
-    { _id },
-    { $set: { url: req.body.url } },
-    {new: true},
+  const {id} = req.params;
+  const editUrl = req.body.url;
+  const updatedUrl = await Url.findByIdAndUpdate(
+     id ,
+    { $set:  {url: editUrl  }},
+    {returnDocument: 'after'},
   );
 
   res.status(201).json({
     success: true,
     message: "URL changed successfully!",
-    data: updateUrl,
+    data: updatedUrl,
   });
+  console.log(updatedUrl.url);
 };
