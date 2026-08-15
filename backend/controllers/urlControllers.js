@@ -25,7 +25,15 @@ export const getUrl = async (req, res) => {
   const getUrl = await Url.findOne({ nano_id: nano_id }, { _id: 0, url: 1 });
 
   res.redirect(301, getUrl.url);
-  const clickCount = await Url.findOneAndUpdate({ nano_id: nano_id }, { $inc: { click: 1 } });
+  const clickCount = await Url.findOneAndUpdate(
+    { nano_id: nano_id },
+    { $inc: { click: 1 } },
+  );
 
   console.log(clickCount.click);
+};
+
+export const updateUrl = async (req, res) => {
+  const { nano_id } = req.params;
+  const getUrl = await Url 
 };
