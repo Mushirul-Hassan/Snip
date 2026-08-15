@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { nanoid } from 'nanoid'
+import { nanoid } from "nanoid";
 
 const projectSchema = new mongoose.Schema({
   // user: {
@@ -13,6 +13,10 @@ const projectSchema = new mongoose.Schema({
   },
 
   nano_id: { type: String, default: nanoid },
+
+  click: {
+    type: Number,
+  },
 });
 
 export const Url = mongoose.model("Url", projectSchema);
