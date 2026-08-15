@@ -26,5 +26,6 @@ export const getUrl = async (req, res) => {
 
   res.redirect(301, getUrl.url);
 
-  // console.log(count);
+   Url.findByIdAndUpdate(nano_id, { $inc: { click: 1 } });
+  // console.log(clickCount.);
 };
