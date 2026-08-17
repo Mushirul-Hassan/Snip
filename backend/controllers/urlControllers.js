@@ -23,7 +23,7 @@ export const createUrl = async (req, res) => {
 export const getUrl = async (req, res) => {
   const { nano_id } = req.params;
   const getUrl = await Url.findOne({ nano_id }, { _id: 0, url: 1 });
-
+console.log(getUrl.url);
   res.redirect(301, getUrl.url);
   const clickCount = await Url.findOneAndUpdate(
     { nano_id: nano_id },
@@ -47,5 +47,5 @@ export const updateUrl = async (req, res) => {
     message: "URL changed successfully!",
     data: updatedUrl,
   });
-  console.log(updatedUrl.url);
+  console.log("this is the updated url",updatedUrl.url) ;
 };
