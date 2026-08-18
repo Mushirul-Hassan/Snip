@@ -42,10 +42,23 @@ export const updateUrl = async (req, res) => {
     { returnDocument: "after" },
   );
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     message: "URL changed successfully!",
     data: updatedUrl,
   });
-  console.log("this is the updated url", updatedUrl.url);
+  // console.log("this is the updated url", updatedUrl.url);
+};
+
+export const deleteUrl = async (req, res) => {
+  const { nano_id } = req.params;
+  // console.log(id);
+  const remove = await Url.findOneAndDelete({ nano_id });
+  console.log(remove);
+
+  res.status(200).json({
+    success: true,
+    message: "URL deleted successfully!",
+    data: remove,
+  });
 };
