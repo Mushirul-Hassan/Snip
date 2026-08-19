@@ -5,6 +5,11 @@ import { nanoid } from "nanoid";
 export const createUrl = async (req, res) => {
   try {
     const { url } = req.body;
+    if (!url) {
+      return res
+        .status(404)
+        .json({ success: false, message: "URL is required" });
+    }
 
     const snip = nanoid();
 
@@ -28,9 +33,17 @@ export const createUrl = async (req, res) => {
 export const getUrl = async (req, res) => {
   try {
     const { nano_id } = req.params;
-
+    //  if (!nano_id) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Url is not present" });
+    // }
     const getUrl = await Url.findOne({ nano_id }, { _id: 0, url: 1 });
-
+    if (!getUrl) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Url is not present" });
+    }
     // console.log(getUrl.url);
     res.redirect(getUrl.url);
     const clickCount = await Url.findOneAndUpdate(
@@ -46,12 +59,23 @@ export const getUrl = async (req, res) => {
 export const updateUrl = async (req, res) => {
   try {
     const { nano_id } = req.params;
+    //    if (!nano_id) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Please provide nano_id" });
+    // }
     const editUrl = req.body.url;
+      if (!editUrl) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Please provide new url" });
+    }
     const updatedUrl = await Url.findOneAndUpdate(
       { nano_id },
       { $set: { url: editUrl } },
       { returnDocument: "after" },
     );
+
 
     res.status(200).json({
       success: true,
