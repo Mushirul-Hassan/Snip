@@ -30,6 +30,11 @@ export const createUrl = async (req, res) => {
   }
 };
 
+
+export const getAllUrls = async (req,res) => {
+  
+}
+
 export const getUrl = async (req, res) => {
   try {
     const { nano_id } = req.params;
