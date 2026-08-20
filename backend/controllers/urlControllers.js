@@ -30,10 +30,18 @@ export const createUrl = async (req, res) => {
   }
 };
 
-
-export const getAllUrls = async (req,res) => {
-  
-}
+export const getUrls = async (req, res) => {
+  try {
+    const getUrls = await Url.find({});
+    res.status(201).json({
+      success: true,
+      message: "Sending all URLs",
+      data: getUrls,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
 export const getUrl = async (req, res) => {
   try {
@@ -70,7 +78,7 @@ export const updateUrl = async (req, res) => {
     //     .json({ success: false, message: "Please provide nano_id" });
     // }
     const editUrl = req.body.url;
-      if (!editUrl) {
+    if (!editUrl) {
       return res
         .status(404)
         .json({ success: false, message: "Please provide new url" });
@@ -80,7 +88,6 @@ export const updateUrl = async (req, res) => {
       { $set: { url: editUrl } },
       { returnDocument: "after" },
     );
-
 
     res.status(200).json({
       success: true,
