@@ -33,7 +33,7 @@ export const createUrl = async (req, res) => {
 export const getUrls = async (req, res) => {
   try {
     const getUrls = await Url.find({});
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Sending all URLs",
       data: getUrls,
