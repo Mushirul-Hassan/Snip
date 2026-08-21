@@ -19,14 +19,14 @@ export const createUrl = async (req, res) => {
     });
 
     const savedUrl = await newUrl.save();
-
+    // add validation for correct structure
     res.status(201).json({
       success: true,
       message: "URL shortened successfully!",
       data: savedUrl,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -51,6 +51,7 @@ export const getUrl = async (req, res) => {
     //     .status(404)
     //     .json({ success: false, message: "Url is not present" });
     // }
+    // add validation for correct structure
     const getUrl = await Url.findOne({ nano_id }, { _id: 0, url: 1 });
     if (!getUrl) {
       return res
@@ -65,7 +66,7 @@ export const getUrl = async (req, res) => {
     );
     // console.log(clickCount.click);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(404).json({ success: false, message: error.message });
   }
 };
 
@@ -88,7 +89,7 @@ export const updateUrl = async (req, res) => {
       { $set: { url: editUrl } },
       { returnDocument: "after" },
     );
-
+    // add validation for correct structure
     res.status(200).json({
       success: true,
       message: "URL changed successfully!",
