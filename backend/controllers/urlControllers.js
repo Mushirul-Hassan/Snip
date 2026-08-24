@@ -32,6 +32,10 @@ export const createUrl = async (req, res) => {
 
 export const getUrls = async (req, res) => {
   try {
+    const page  = req.query.page || 1;
+    console.log(page);
+    const limit = req.query.limit || 10;
+    console.log(limit);
     const getUrls = await Url.find({});
     res.status(200).json({
       success: true,
