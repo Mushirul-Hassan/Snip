@@ -32,7 +32,7 @@ export const createUrl = async (req, res) => {
 
 export const getUrls = async (req, res) => {
   try {
-    const page  = req.query.page || 1;
+    const page  = Math.max(1,req.query.page || 1);
     console.log(page);
     const limit = req.query.limit || 10;
     console.log(limit);
