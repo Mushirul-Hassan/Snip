@@ -38,7 +38,8 @@ export const getUrls = async (req, res) => {
     console.log(limit);
     const getUrls = await Url.find({})
     .limit(limit * 1)
-    .skip((page - 1) * limit);
+    .skip((page - 1) * limit)
+    .sort({click: -1});
     res.status(200).json({
       success: true,
       message: "Sending all URLs",
