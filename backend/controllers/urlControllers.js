@@ -32,14 +32,14 @@ export const createUrl = async (req, res) => {
 
 export const getUrls = async (req, res) => {
   try {
-    const page  = Math.max(1,req.query.page || 1);
+    const page = Math.max(1, req.query.page || 1);
     console.log(page);
     const limit = req.query.limit || 10;
     console.log(limit);
     const getUrls = await Url.find({})
-    .limit(limit * 1)
-    .skip((page - 1) * limit)
-    .sort({click: -1});
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ createdAt : -1, click: -1 });
     res.status(200).json({
       success: true,
       message: "Sending all URLs",
