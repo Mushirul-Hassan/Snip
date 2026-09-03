@@ -2,22 +2,39 @@ import bcrypt from "bcrypt";
 import { Auth } from "../models/authModel.js";
 
 export const createAccount = async (req, res) => {
-  const { email, password } = req.body;
-  //   console.log(name);
-  console.log(email);
-  console.log(password);
-  const hashedPassword = await bcrypt.hash(password, 10);
-  console.log(hashedPassword);
-  const newDoc = new Auth({
-    // name,
-    email,
-    password: hashedPassword,
-  });
-  console.log(newDoc);
+  try {
+    const { email, password } = req.body;
 
-  const savedDoc = await newDoc.save();
-  console.log(savedDoc);
-  res
-    .status(201)
-    .json({ success: true, message: "User registered successfully!"});
+    if (!email) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Email is required" });
+    }
+    if (!password) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Password is required" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newDoc = new Auth({
+      // name,
+      email,
+      password: hashedPassword,
+    });
+
+    const savedDoc = await newDoc.save();
+    console.log(savedDoc);
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully!" });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const getAccount = async (req, res) => {
+  const { email, password } = req.body;
+  
 };
