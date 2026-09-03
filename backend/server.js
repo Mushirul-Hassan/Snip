@@ -3,6 +3,7 @@ import session from "express";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import urlRouter from "./routes/urlRoutes.js";
+import authRouter from "./routes/authRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -21,7 +22,8 @@ const PORT = 3000 || process.env.PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/url", urlRouter);
+app.use("/api/url", urlRouter);
+app.use("/api/auth", authRouter);
 
 app.get("/", (req, res) => {
   res.send({ message: "Hello from an Express API!" });
