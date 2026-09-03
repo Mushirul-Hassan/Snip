@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { Auth } from "../models/authModel.js";
 
-export const createAccount = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -34,7 +34,28 @@ export const createAccount = async (req, res) => {
   }
 };
 
-export const getAccount = async (req, res) => {
-  const { email, password } = req.body;
-  
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await Auth.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User is not present" });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Password is incorrect" });
+    } else {
+      //produce jwt here
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
 };
