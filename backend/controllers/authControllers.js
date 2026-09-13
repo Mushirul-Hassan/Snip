@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jsonwebtoken from "jwt";
 import { Auth } from "../models/authModel.js";
 
 export const register = async (req, res) => {
