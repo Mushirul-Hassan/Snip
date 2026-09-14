@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import jsonwebtoken from "jwt";
+// import jsonwebtoken from "jwt";
 import { Auth } from "../models/authModel.js";
 
 export const register = async (req, res) => {
@@ -48,14 +48,21 @@ export const login = async (req, res) => {
     }
 
     const match = await bcrypt.compare(password, user.password);
+    const accessToken = jwt.sign(JSON.stringify(user), process.env.TOKEN_SECRET)
 
-    if (!match) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Password is incorrect" });
-    } else {
-      //produce jwt here
-    }
+    // if (!match) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Password is incorrect" });
+    // } else {
+    //   //produce jwt here
+    // }
+
+    if(match){
+            res.json({ accessToken: accessToken });
+        } else {
+            res.json({ message: "Invalid Credentials" });
+        }
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
