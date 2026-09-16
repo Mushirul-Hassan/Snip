@@ -48,22 +48,20 @@ export const login = async (req, res) => {
     }
 
     const match = await bcrypt.compare(password, user.password);
-    const accessToken = jwt.sign(JSON.stringify(user), process.env.TOKEN_SECRET)
 
-    // if (!match) {
-    //   return res
-    //     .status(404)
-    //     .json({ success: false, message: "Password is incorrect" });
-    // } else {
-    //   //produce jwt here
-    // }
+    if (!match) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid credentials" });
+    }
 
-    if(match){
-            res.json({ accessToken: accessToken });
-        } else {
-            res.json({ message: "Invalid Credentials" });
-        }
+    const accessToken = jwt.sign(
+      JSON.stringify(user),
+      process.env.TOKEN_SECRET,
+    );
+
+    res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
