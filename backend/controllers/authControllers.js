@@ -55,10 +55,12 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    const accessToken = jwt.sign(
-      JSON.stringify(user),
-      process.env.TOKEN_SECRET,
-    );
+    const payload = {
+      email,
+    };
+    const accessToken = jwt.sign({ payload }, process.env.TOKEN_SECRET, {
+      expiresIn: "15m",
+    });
 
     res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
