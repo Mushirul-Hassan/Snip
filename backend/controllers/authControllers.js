@@ -60,10 +60,14 @@ export const login = async (req, res) => {
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "15m",
+      expiresIn: process.env.EXPIRY_TIME,
     });
 
-    res.status(200).json({ message: "Login successful", accessToken });
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.REFRESH_TIME,
+    });
+
+    res.status(200).json({ message: "Login successful", accessToken, refreshToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }

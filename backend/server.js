@@ -1,5 +1,6 @@
 import express from "express";
 import session from "express";
+import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import urlRouter from "./routes/urlRoutes.js";
@@ -21,6 +22,7 @@ const PORT = 3000 || process.env.PORT;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use("/api/url", urlRouter);
 app.use("/api/auth", authRouter);
