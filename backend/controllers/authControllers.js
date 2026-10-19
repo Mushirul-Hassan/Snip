@@ -67,8 +67,20 @@ export const login = async (req, res) => {
       expiresIn: process.env.REFRESH_TIME,
     });
 
-    res.status(200).json({ message: "Login successful", accessToken, refreshToken });
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+
+export const refresh = (req,res,next) => {
+  console.log(req.headers.authorization);
+}
