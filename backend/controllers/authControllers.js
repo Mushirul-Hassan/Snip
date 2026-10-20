@@ -60,11 +60,11 @@ export const login = async (req, res) => {
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.EXPIRY_TIME,
+      expiresIn: "15s",
     });
 
     const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.REFRESH_TIME,
+      expiresIn: "1m",
     });
 
     res.cookie("jwt", refreshToken, {
@@ -80,7 +80,18 @@ export const login = async (req, res) => {
   }
 };
 
+export const refresh = async (req, res) => {
+  try {
+    const payload = {
+      email,
+    };
 
-export const refresh = (req,res,next) => {
-  console.log(req.headers.authorization);
-}
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1m",
+    });
+
+    res.status(200).json({ message: "Refresh token sent", refreshToken });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
