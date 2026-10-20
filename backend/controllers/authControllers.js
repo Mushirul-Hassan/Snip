@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Auth } from "../models/authModel.js";
-
 export const register = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -60,11 +59,11 @@ export const login = async (req, res) => {
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "15s",
+      expiresIn: process.env.EXPIRY_TIME
     });
 
     const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1m",
+      expiresIn: process.env.REFRESH_TIME
     });
 
     res.cookie("jwt", refreshToken, {

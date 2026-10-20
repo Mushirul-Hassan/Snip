@@ -15,6 +15,7 @@ export const verify = (req, res, next) => {
   }
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET);
+    const reDecode = 
 
     req.user = decode;
 
