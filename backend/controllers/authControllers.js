@@ -59,21 +59,21 @@ export const login = async (req, res) => {
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.EXPIRY_TIME
+      expiresIn: process.env.EXPIRY_TIME,
     });
 
     const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.REFRESH_TIME
+      expiresIn: process.env.REFRESH_TIME,
     });
 
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
       sameSite: "None",
       secure: true,
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 3 * 60 * 1000,
     });
 
-    res.status(200).json({ message: "Login successful", accessToken });
+    res.status(200).json({ message: "Login successful", accessToken, refreshToken  });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
@@ -85,11 +85,11 @@ export const refresh = async (req, res) => {
       email,
     };
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "1m",
+   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.EXPIRY_TIME,
     });
 
-    res.status(200).json({ message: "Refresh token sent", refreshToken });
+    res.status(200).json({ message: "Access token sent again", accessToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
