@@ -15,7 +15,6 @@ export const verify = (req, res, next) => {
   }
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET);
-    const reDecode = 
 
     req.user = decode;
 
@@ -24,5 +23,24 @@ export const verify = (req, res, next) => {
     return res
       .status(403)
       .json({ success: false, message: "Invalid or expired token." });
+  }
+};
+
+export const refresh = (req, res, next) => {
+  const refreshCookie = req.cookies;
+  if (!refreshCookie) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Refresh token not present" });
+  }
+
+  try {
+    const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
+    req.user = refreshToken;
+    next();
+  } catch (error) {
+    return res
+      .status(403)
+      .json({ success: false, message: "Invalid or expired refresh token." });
   }
 };
