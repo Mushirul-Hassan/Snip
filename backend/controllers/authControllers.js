@@ -75,14 +75,14 @@ export const login = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "Login successful", accessToken, refreshToken });
+      .json({ message: "Login successful", accessToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
 export const refresh = (req, res) => {
-  const refreshCookie = req.cookies.jwt;
+  const refreshCookie = req.cookies.jwt; 
   console.log("hi", refreshCookie);
   if (!refreshCookie) {
     return res
