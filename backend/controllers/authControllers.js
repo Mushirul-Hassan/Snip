@@ -62,7 +62,7 @@ export const login = async (req, res) => {
       expiresIn: process.env.EXPIRY_TIME,
     });
 
-    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
       expiresIn: process.env.REFRESH_TIME,
     });
 
@@ -73,24 +73,41 @@ export const login = async (req, res) => {
       maxAge: 3 * 60 * 1000,
     });
 
-    res.status(200).json({ message: "Login successful", accessToken, refreshToken  });
+    res
+      .status(200)
+      .json({ message: "Login successful", accessToken, refreshToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
-export const refresh = async (req, res) => {
-  try {
-    const payload = {
-      email,
-    };
-
-   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.EXPIRY_TIME,
-    });
-
-    res.status(200).json({ message: "Access token sent again", accessToken });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error" });
+export const refresh = (req, res) => {
+  const refreshCookie = req.cookies.jwt;
+  console.log("hi", refreshCookie);
+  if (!refreshCookie) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Refresh token not present" });
   }
+
+  console.log("nehou");
+  const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
+  console.log("hello", refreshToken);
+  req.user = refreshToken;
+  console.log("bye", req.user);
+
+  if (!refreshToken)
+    return res
+      .status(403)
+      .json({ success: false, message: "Invalid or expired refresh token." });
+
+  const payload = {
+    email : req.user.email,
+  };
+
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.EXPIRY_TIME,
+  });
+
+  res.status(200).json({ message: "Access token sent again", accessToken });
 };
