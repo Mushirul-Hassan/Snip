@@ -70,19 +70,17 @@ export const login = async (req, res) => {
       httpOnly: true,
       sameSite: "None",
       secure: true,
-      maxAge: 3 * 60 * 1000,
+      // maxAge: process.env.REFRESH_TIME,
     });
 
-    res
-      .status(200)
-      .json({ message: "Login successful", accessToken });
+    res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
 export const refresh = (req, res) => {
-  const refreshCookie = req.cookies.jwt; 
+  const refreshCookie = req.cookies.jwt;
   console.log("hi", refreshCookie);
   if (!refreshCookie) {
     return res
@@ -91,23 +89,27 @@ export const refresh = (req, res) => {
   }
 
   console.log("nehou");
-  const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
-  console.log("hello", refreshToken);
-  req.user = refreshToken;
-  console.log("bye", req.user);
-
-  if (!refreshToken)
+  try {
+    const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
+    console.log("hello", refreshToken);
+    req.user = refreshToken;
+    console.log("bye", req.user);
+  } catch (error) {
     return res
       .status(403)
-      .json({ success: false, message: "Invalid or expired refresh token." });
+      .json({ success: false, message: "Invalid or expired token." });
+  }
+  try {
+    const payload = {
+      email: req.user.email,
+    };
 
-  const payload = {
-    email : req.user.email,
-  };
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.EXPIRY_TIME,
+    });
 
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.EXPIRY_TIME,
-  });
-
-  res.status(200).json({ message: "Access token sent again", accessToken });
+    res.status(200).json({ message: "Access token sent again", accessToken });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
 };
