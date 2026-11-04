@@ -99,6 +99,9 @@ export const refresh = (req, res) => {
       .status(403)
       .json({ success: false, message: "Invalid or expired token." });
   }
+  //delete the old refresh token
+  //create new refresh token using cookies
+  // create the acess token with it below
   try {
     const payload = {
       email: req.user.email,
