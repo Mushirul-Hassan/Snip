@@ -26,4 +26,6 @@ const refreshTokenSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
 export const Token = mongoose.model("Token", refreshTokenSchema);

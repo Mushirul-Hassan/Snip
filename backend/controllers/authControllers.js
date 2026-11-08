@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Auth } from "../models/authModel.js";
+import { Token } from "../models/refreshTokenModel.js";
 export const register = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -66,6 +67,15 @@ export const login = async (req, res) => {
       expiresIn: process.env.REFRESH_TIME,
     });
 
+    
+    const createRefreshToken = new Token({
+      token: refreshToken,
+      expiresAt,
+      revoked,
+    });
+
+    await createRefreshToken.save();
+
     res.cookie("jwt", refreshToken, {
       httpOnly: true,
       sameSite: "None",
@@ -79,7 +89,7 @@ export const login = async (req, res) => {
   }
 };
 
-export const refresh = (req, res) => {
+export const refresh = async (req, res) => {
   const refreshCookie = req.cookies.jwt;
   console.log("hi", refreshCookie);
   if (!refreshCookie) {
@@ -89,17 +99,18 @@ export const refresh = (req, res) => {
   }
 
   console.log("nehou");
-  try {
-    const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
-    console.log("hello", refreshToken);
-    req.user = refreshToken;
-    console.log("bye", req.user);
-  } catch (error) {
+
+  const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
+  console.log("hello", refreshToken);
+  req.user = refreshToken;
+  console.log("bye", req.user);
+  if (!refreshToken === refreshCookie)
     return res
-      .status(403)
+      .status(401)
       .json({ success: false, message: "Invalid or expired token." });
-  }
-  //delete the old refresh token
+
+  await Token.findOneAndDelete({ userId });
+
   //create new refresh token using cookies
   // create the acess token with it below
   try {
@@ -110,6 +121,27 @@ export const refresh = (req, res) => {
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.EXPIRY_TIME,
     });
+
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
+      expiresIn: process.env.REFRESH_TIME,
+    });
+
+    
+    const createRefreshToken = new Token({
+      token: refreshToken,
+      expiresAt,
+      revoked,
+    });
+
+    await createRefreshToken.save();
+
+    res.cookie("jwt", refreshToken, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      // maxAge: process.env.REFRESH_TIME,
+    });
+
 
     res.status(200).json({ message: "Access token sent again", accessToken });
   } catch (error) {
