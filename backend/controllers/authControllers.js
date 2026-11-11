@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import crypto from 'node:crypto';
+
 import { Auth } from "../models/authModel.js";
 import { Token } from "../models/refreshTokenModel.js";
 export const register = async (req, res) => {
@@ -67,11 +69,13 @@ export const login = async (req, res) => {
       expiresIn: process.env.REFRESH_TIME,
     });
 
-    
+    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+
     const createRefreshToken = new Token({
-      token: refreshToken,
+      token: tokenHash,
       expiresAt,
       revoked,
+      replacedBy
     });
 
     await createRefreshToken.save();
@@ -111,8 +115,6 @@ export const refresh = async (req, res) => {
 
   await Token.findOneAndDelete({ userId });
 
-  //create new refresh token using cookies
-  // create the acess token with it below
   try {
     const payload = {
       email: req.user.email,
