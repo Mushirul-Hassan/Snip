@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Auth } from "./authModel";
+import { Auth } from "./authModel.js";
 
 const refreshTokenSchema = new mongoose.Schema(
   {
@@ -7,6 +7,11 @@ const refreshTokenSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: Auth,
       required: true,
+    },
+    jti: {
+      type: String,
+      required: true,
+      unique: true,
     },
     token: {
       type: String,
@@ -21,6 +26,7 @@ const refreshTokenSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    replacedBy: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true },
