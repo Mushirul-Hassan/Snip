@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import crypto from 'node:crypto';
+import crypto from "node:crypto";
 
 import { Auth } from "../models/authModel.js";
 import { Token } from "../models/refreshTokenModel.js";
@@ -69,13 +69,19 @@ export const login = async (req, res) => {
       expiresIn: process.env.REFRESH_TIME,
     });
 
-    const tokenHash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    const jti = crypto.randomBytes(16).toString("hex");
 
     const createRefreshToken = new Token({
       token: tokenHash,
+      jti,
       expiresAt,
       revoked,
-      replacedBy
+      replacedBy,
     });
 
     await createRefreshToken.save();
@@ -128,7 +134,6 @@ export const refresh = async (req, res) => {
       expiresIn: process.env.REFRESH_TIME,
     });
 
-    
     const createRefreshToken = new Token({
       token: refreshToken,
       expiresAt,
@@ -143,7 +148,6 @@ export const refresh = async (req, res) => {
       secure: true,
       // maxAge: process.env.REFRESH_TIME,
     });
-
 
     res.status(200).json({ message: "Access token sent again", accessToken });
   } catch (error) {
