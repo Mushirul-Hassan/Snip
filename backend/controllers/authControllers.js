@@ -64,8 +64,11 @@ export const login = async (req, res) => {
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.EXPIRY_TIME,
     });
-
-    const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
+    const refreshPayload = {
+      email,
+      jti,
+    };
+    const refreshToken = jwt.sign(refreshPayload, process.env.REFRESH_SECRET, {
       expiresIn: process.env.REFRESH_TIME,
     });
 
@@ -109,25 +112,31 @@ export const refresh = async (req, res) => {
   }
 
   console.log("nehou");
-
-  const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
-  console.log("hello", refreshToken);
-  // req.user = refreshToken;
-  console.log("bye", req.user);
-  if (!refreshToken === refreshCookie)
+  try {
+    const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
+    console.log("hello", refreshToken);
+    // req.user = refreshToken;
+    console.log("bye", req.user);
+    // if (!refreshToken === refreshCookie)
+  } catch (error) {
     return res
       .status(401)
       .json({ success: false, message: "Invalid or expired token." });
-
+  }
   await Token.findOneAndDelete({ userId });
 
   try {
     const payload = {
       email: req.user.email,
+      jti
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.EXPIRY_TIME,
+    });
+
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
+      expiresIn: process.env.REFRESH_TIME,
     });
 
     const tokenHash = crypto
@@ -137,11 +146,7 @@ export const refresh = async (req, res) => {
 
     const jti = crypto.randomBytes(16).toString("hex");
 
-    const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
-      expiresIn: process.env.REFRESH_TIME,
-    });
-
-    const createRefreshToken = new Token({
+    const newRefreshToken = new Token({
       token: tokenHash,
       jti,
       expiresAt,
@@ -149,9 +154,9 @@ export const refresh = async (req, res) => {
       replacedBy,
     });
 
-    await createRefreshToken.save();
+    await newRefreshToken.save();
 
-    res.cookie("jwt", refreshToken, {
+    res.cookie("jwt", newRefreshTokenefreshToken, {
       httpOnly: true,
       sameSite: "None",
       secure: true,
