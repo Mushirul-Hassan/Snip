@@ -112,7 +112,7 @@ export const refresh = async (req, res) => {
 
   const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
   console.log("hello", refreshToken);
-  req.user = refreshToken;
+  // req.user = refreshToken;
   console.log("bye", req.user);
   if (!refreshToken === refreshCookie)
     return res
@@ -130,14 +130,23 @@ export const refresh = async (req, res) => {
       expiresIn: process.env.EXPIRY_TIME,
     });
 
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    const jti = crypto.randomBytes(16).toString("hex");
+
     const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
       expiresIn: process.env.REFRESH_TIME,
     });
 
     const createRefreshToken = new Token({
-      token: refreshToken,
+      token: tokenHash,
+      jti,
       expiresAt,
       revoked,
+      replacedBy,
     });
 
     await createRefreshToken.save();
