@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { nanoid } from "nanoid";
+import { Auth } from "./authModel.js";
 
 const projectSchema = new mongoose.Schema(
   {
@@ -7,7 +8,11 @@ const projectSchema = new mongoose.Schema(
     //   type: String,
     //   required: true,
     // },
-
+    userId: {
+      type: mongoose.Types.ObjectId,
+      ref: Auth,
+      required: true,
+    },
     url: {
       type: String,
       required: true,
