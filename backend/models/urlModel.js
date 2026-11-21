@@ -8,8 +8,8 @@ const projectSchema = new mongoose.Schema(
     //   type: String,
     //   required: true,
     // },
-    userId: {
-      type: mongoose.Types.ObjectId,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: Auth,
       required: true,
     },

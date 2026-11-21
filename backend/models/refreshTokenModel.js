@@ -3,8 +3,8 @@ import { Auth } from "./authModel.js";
 
 const refreshTokenSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Types.ObjectId,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
       ref: Auth,
       required: true,
     },
