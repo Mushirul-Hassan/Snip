@@ -8,7 +8,14 @@ export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-     if (!name) {
+    const duplicate = await Auth.findOne({ email });
+    if (duplicate) {
+      return res
+        .status(409)
+        .json({ uccess: false, message: "User is already registered" });
+    }
+
+    if (!name) {
       return res
         .status(404)
         .json({ success: false, message: "Username is required" });
@@ -47,19 +54,28 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+
+    if (!password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Password is required" });
+    }
+
     const user = await Auth.findOne({ email });
-    console.log("hello");;
+    // const stringId = user._id.toString()
+    // console.log(stringId);
+    console.log(user.id);
+    console.log("hello");
     if (!user) {
       return res
         .status(400)
         .json({ success: false, message: "User is not present" });
     }
-
-    //  if (!email) {
-    //   return res
-    //     .status(400)
-    //     .json({ success: false, message: "Email is invalid" });
-    // }
 
     const match = await bcrypt.compare(password, user.password);
 
@@ -68,10 +84,13 @@ export const login = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Invalid credentials" });
     }
-
+    console.log("jsjjdjd");
+    // const stringId = user._id.toString();
+    // console.log(stringId);
     const payload = {
-      email,
+      sub: user.id,
     };
+    console.log(payload);
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.EXPIRY_TIME,
@@ -79,7 +98,7 @@ export const login = async (req, res) => {
 
     const jti = crypto.randomBytes(16).toString("hex");
     const refreshPayload = {
-     email,
+      sub: user.id,
       jti,
     };
 
@@ -90,10 +109,11 @@ export const login = async (req, res) => {
     //   .createHash("sha256")
     //   .update(refreshToken)
     //   .digest("hex");
-
+    console.log(user._id);
+    console.log("before token");
+    console.log(jti);
     const saveRefreshToken = new Token({
-      // token: tokenHash,
-      userId : _id,
+      user: user.id,
       jti,
     });
 
@@ -106,9 +126,10 @@ export const login = async (req, res) => {
       secure: true,
       // maxAge: process.env.REFRESH_TIME,
     });
-   console.log("hi");
+    console.log("hi");
     res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
