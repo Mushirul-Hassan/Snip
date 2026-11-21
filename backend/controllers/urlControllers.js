@@ -1,24 +1,28 @@
 import express from "express";
+import mongoose from "mongoose";
 import { Url } from "../models/urlModel.js";
 import { nanoid } from "nanoid";
 
 export const createUrl = async (req, res) => {
   try {
     const { url } = req.body;
+    console.log(req.body);
     if (!url) {
       return res
         .status(404)
         .json({ success: false, message: "URL is required" });
     }
-
+   
     const snip = nanoid();
-
+ 
     const newUrl = new Url({
+      user: req.user.sub,
       url,
       nano_id: snip,
     });
 
     const savedUrl = await newUrl.save();
+    console.log(savedUrl);
     // add validation for correct structure
     res.status(201).json({
       success: true,
