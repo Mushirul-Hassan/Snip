@@ -70,7 +70,7 @@ export const login = async (req, res) => {
     // const stringId = user._id.toString()
     // console.log(stringId);
     console.log(user.id);
-    console.log("hello");
+    console.log("before bcrypt");
     if (!user) {
       return res
         .status(400)
@@ -84,7 +84,7 @@ export const login = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Invalid credentials" });
     }
-    console.log("jsjjdjd");
+    console.log("before token");
     // const stringId = user._id.toString();
     // console.log(stringId);
     const payload = {
@@ -110,7 +110,7 @@ export const login = async (req, res) => {
     //   .update(refreshToken)
     //   .digest("hex");
     console.log(user._id);
-    console.log("before token");
+    console.log("before rf save");
     console.log(jti);
     const saveRefreshToken = new Token({
       user: user.id,
@@ -126,7 +126,7 @@ export const login = async (req, res) => {
       secure: true,
       // maxAge: process.env.REFRESH_TIME,
     });
-    console.log("hi");
+    console.log("before login success");
     res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
     console.log(error);
@@ -135,35 +135,55 @@ export const login = async (req, res) => {
 };
 
 export const refresh = async (req, res) => {
-  const refreshCookie = req.cookies.jwt;
-  console.log("hi", refreshCookie);
-  if (!refreshCookie) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Refresh token not present" });
-  }
-
-  console.log("nehou");
   try {
-    const refreshToken = jwt.verify(refreshCookie, process.env.REFRESH_SECRET);
-    console.log(refreshToken.refreshPayload.jti);
-    console.log("hello", refreshToken);
+    const refreshToken = req.cookies.jwt;
+    console.log("refresh token", refreshToken);
+    if (!refreshToken) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Refresh token not present" });
+    }
+
+    console.log("after receiving refresh token");
+    // try {
+    const decodeRToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    console.log(decodeRToken.jti);
+    console.log("this is refresh token in refresh logic", decodeRToken);
     // req.user = refreshToken;
-    console.log("bye", req.user);
-    // if (!refreshToken === refreshCookie)
-  } catch (error) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Invalid or expired token." });
-  }
+    console.log("getting user after getting refresh token back", decodeRToken.sub);
+    if (!decodeRToken) {
+      // } catch (error) {
+      console.log(error);
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid or expired token." });
+    }
 
+    const receivedJTI = decodeRToken.jti;
+    const findJTI = await Token.find({ jti: receivedJTI });
+    if (!findJTI) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Token is not present." });
+    } else {
+      await Token.findOneAndDelete({decodeRToken});
+      console.log("delete");
+    }
 
+    //find user
+    // const user = await Token.findOne({sub: decodeRToken.sub});
 
-  const jti = crypto.randomBytes(16).toString("hex");
+    //compare jti of recieved token with db jti
+    //but how would be 1. extract the received jti
 
-  try {
+    //and how would we 2.  know the db jti is for current one , i.e. current session one
+    // if (received jti == stored (find jti ))
+    // if found then then revoke the current token and then generate new
+    //if not then say that it has already been revoked
+
+    // try {
     const payload = {
-      _id,
+      sub: decodeRToken.sub,
     };
 
     const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -172,13 +192,17 @@ export const refresh = async (req, res) => {
 
     const jti = crypto.randomBytes(16).toString("hex");
     const refreshPayload = {
-      _id,
+      sub: decodeRToken.sub,
       jti,
     };
 
-    const refreshToken = jwt.sign(refreshPayload, process.env.REFRESH_SECRET, {
-      expiresIn: process.env.REFRESH_TIME,
-    });
+    const refreshToken_2 = jwt.sign(
+      refreshPayload,
+      process.env.REFRESH_SECRET,
+      {
+        expiresIn: process.env.REFRESH_TIME,
+      },
+    );
 
     // const tokenHash = crypto
     //   .createHash("sha256")
@@ -187,6 +211,7 @@ export const refresh = async (req, res) => {
 
     const newRefreshToken = new Token({
       // token: tokenHash,
+      user: decodeRToken.sub,
       jti,
       // expiresAt,
       // revoked,
@@ -195,7 +220,7 @@ export const refresh = async (req, res) => {
 
     await newRefreshToken.save();
 
-    res.cookie("jwt", refreshToken, {
+    res.cookie("jwt", refreshToken_2, {
       httpOnly: true,
       sameSite: "None",
       secure: true,
@@ -204,6 +229,7 @@ export const refresh = async (req, res) => {
 
     res.status(200).json({ message: "Access token sent again", accessToken });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
