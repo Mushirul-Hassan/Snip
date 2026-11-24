@@ -169,7 +169,7 @@ export const refresh = async (req, res) => {
     const findJTI = await Token.findOne({ jti: receivedJTI });
     console.log(findJTI);
     if (!findJTI) {
-      console.log("not present means already deleted");
+      console.log("not present means already deleted or rotated");
       return res
         .status(401)
         .json({ success: false, message: "Token is not present." });
@@ -183,8 +183,7 @@ export const refresh = async (req, res) => {
     // }
     // if (findJTI.expiresAt < new Date()) {
     //   return res.status(401).json({ message: "Refresh token expired" });
-    // } 
-
+    // }
 
     // THIS PART IS FOR LOGOUT
     // else {
@@ -254,5 +253,24 @@ export const refresh = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.jwt;
+    console.log(refreshToken);
+    if (refreshToken) {
+      // const decodeRToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+      const deleteToken = await Token.findOneAndDelete({
+        id: refreshToken.sub,
+      });
+      console.log("deleted", deleteToken);
+    }
+    res.clearCookie("jwt", { path: "/api/auth/refresh" });
+    res.json({ message: "Logged out" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
