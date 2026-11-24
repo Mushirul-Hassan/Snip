@@ -136,7 +136,7 @@ export const login = async (req, res) => {
 
 export const refresh = async (req, res) => {
   try {
-    const refreshToken = req.cookies.jwt;
+    const refreshToken = req.cookies?.jwt;
     console.log("refresh token", refreshToken);
     if (!refreshToken) {
       return res
@@ -145,14 +145,19 @@ export const refresh = async (req, res) => {
     }
 
     console.log("after receiving refresh token");
-    // try {
-    const decodeRToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
-    console.log(decodeRToken.jti);
-    console.log("this is refresh token in refresh logic", decodeRToken);
-    // req.user = refreshToken;
-    console.log("getting user after getting refresh token back", decodeRToken.sub);
-    if (!decodeRToken) {
-      // } catch (error) {
+
+    let decodeRToken;
+    try {
+      decodeRToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+      console.log(decodeRToken.jti);
+      console.log("this is refresh token in refresh logic", decodeRToken);
+      // req.user = refreshToken;
+      console.log(
+        "getting user after getting refresh token back",
+        decodeRToken.sub,
+      );
+      // if (!decodeRToken) {
+    } catch (error) {
       console.log(error);
       return res
         .status(401)
@@ -160,15 +165,32 @@ export const refresh = async (req, res) => {
     }
 
     const receivedJTI = decodeRToken.jti;
-    const findJTI = await Token.find({ jti: receivedJTI });
+    console.log(receivedJTI);
+    const findJTI = await Token.findOne({ jti: receivedJTI });
+    console.log(findJTI);
     if (!findJTI) {
+      console.log("not present means already deleted");
       return res
-        .status(404)
+        .status(401)
         .json({ success: false, message: "Token is not present." });
-    } else {
-      await Token.findOneAndDelete({decodeRToken});
-      console.log("delete");
     }
+
+    // if (!findJTI) {
+    //   return res.status(401).json({ message: "Refresh token not recognized" });
+    // }
+    // if (JTI.revoked) {
+    //   return res.status(401).json({ message: "Refresh token revoked" });
+    // }
+    // if (findJTI.expiresAt < new Date()) {
+    //   return res.status(401).json({ message: "Refresh token expired" });
+    // } 
+
+
+    // THIS PART IS FOR LOGOUT
+    // else {
+    //   console.log("present so ,delete");
+    //   await Token.findOneAndDelete({ _id: decodeRToken.sub });
+    // }
 
     //find user
     // const user = await Token.findOne({sub: decodeRToken.sub});
@@ -181,7 +203,6 @@ export const refresh = async (req, res) => {
     // if found then then revoke the current token and then generate new
     //if not then say that it has already been revoked
 
-    // try {
     const payload = {
       sub: decodeRToken.sub,
     };
@@ -227,7 +248,9 @@ export const refresh = async (req, res) => {
       // maxAge: process.env.REFRESH_TIME,
     });
 
-    res.status(200).json({ message: "Access token sent again", accessToken });
+    res
+      .status(200)
+      .json({ message: "Refresh token rotation done", accessToken });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Server Error" });
