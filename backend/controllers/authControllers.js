@@ -69,8 +69,9 @@ export const login = async (req, res) => {
     const user = await Auth.findOne({ email });
     // const stringId = user._id.toString()
     // console.log(stringId);
-    console.log(user.id);
+    console.log(user?.id);
     console.log("before bcrypt");
+
     if (!user) {
       return res
         .status(400)
@@ -186,9 +187,17 @@ export const refresh = async (req, res) => {
     // }
 
     // THIS PART IS FOR LOGOUT
-    // else {
-    //   console.log("present so ,delete");
-    //   await Token.findOneAndDelete({ _id: decodeRToken.sub });
+    else {
+      console.log("present so ,delete");
+      await Token.findOneAndDelete({ jti: decodeRToken.jti });
+      res.clearCookie("jwt", { path: "/api/auth/refresh" });
+      // return res
+      // .status(201)
+      // .json({ success: true, message: "Old Token deleted " });
+    }
+    // } catch (error) {
+    //   console.log(error);
+    //   res.status(500).json({ message: "Server error" });
     // }
 
     //find user
@@ -261,9 +270,9 @@ export const logout = async (req, res) => {
     const refreshToken = req.cookies?.jwt;
     console.log(refreshToken);
     if (refreshToken) {
-      // const decodeRToken = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+      const decodeRToken = jwt.decode(refreshToken, process.env.REFRESH_SECRET);
       const deleteToken = await Token.findOneAndDelete({
-        id: refreshToken.sub,
+        jti: decodeRToken.jti,
       });
       console.log("deleted", deleteToken);
     }
