@@ -9,6 +9,12 @@ import authRouter from "./routes/authRoutes.js";
 dotenv.config();
 connectDB();
 
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    credentials: true,
+  }),
+);
 const app = express();
 app.use(
   session({
