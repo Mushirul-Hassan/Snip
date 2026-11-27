@@ -3,11 +3,14 @@ import session from "express";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
+import cors from 'cors';
 import urlRouter from "./routes/urlRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 
 dotenv.config();
 connectDB();
+
+const app = express();
 
 app.use(
   cors({
@@ -15,7 +18,6 @@ app.use(
     credentials: true,
   }),
 );
-const app = express();
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -25,6 +27,7 @@ app.use(
   }),
 );
 const PORT = 3000 || process.env.PORT;
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
